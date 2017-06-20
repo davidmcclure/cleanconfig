@@ -14,9 +14,13 @@ class SimpleConfig(dict):
 
     schema = Schema({})
 
+    _instance = None
+
     @classmethod
     def from_env(cls):
         """Get a config instance with the default files.
+
+        Returns: cls
         """
         env = os.environ.get('%s_%s' % (cls.slug.upper(), 'ENV'))
 
@@ -32,6 +36,23 @@ class SimpleConfig(dict):
 
         return cls(paths)
 
+    @classmethod
+    def get(cls):
+        """Provide a cached instance.
+
+        Returns: cls
+        """
+        if not cls._instance:
+            cls._instance = cls.from_env()
+
+        return cls._instance
+
+    @classmethod
+    def reset(cls):
+        """Clear the cached instance.
+        """
+        del cls._instance
+
     def __init__(self, paths):
         """Read config files, validate schema, build dictionary.
 
@@ -44,16 +65,24 @@ class SimpleConfig(dict):
 
 
 # TODO|dev
-class Config(SimpleConfig):
+class Config1(SimpleConfig):
 
-    slug = 'osp'
+    slug = 'c1'
 
     config_dirs = [os.path.dirname(__file__), '~/.osp', '/etc/osp']
 
     schema = Schema({
+        Required('key'): str,
+    })
 
-        'buckets': {
-            Required('v1_corpus'): str,
-        },
 
+# TODO|dev
+class Config2(SimpleConfig):
+
+    slug = 'c2'
+
+    config_dirs = [os.path.dirname(__file__), '~/.osp', '/etc/osp']
+
+    schema = Schema({
+        Required('key'): str,
     })
