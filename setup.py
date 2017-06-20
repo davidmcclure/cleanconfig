@@ -16,5 +16,6 @@ setup(
     install_requires=[
         'anyconfig',
         'voluptuous',
+        'PyYAML',
     ],
 )
