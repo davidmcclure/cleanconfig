@@ -18,17 +18,17 @@ class SimpleConfig(dict):
     def from_env(cls):
         """Get a config instance with the default files.
         """
-        paths = list(map(
-            lambda d: os.path.join(d, '%s.yml' % cls.slug),
-            cls.config_dirs,
-        ))
-
         env = os.environ.get('%s_%s' % (cls.slug.upper(), 'ENV'))
 
-        # Patch in the ENV-specific files.
-        if env:
-            fname = '%s.%s.yml' % (cls.slug, env)
-            paths.append(os.path.join(cls.config_dir, fname))
+        paths = []
+        for d in cls.config_dirs:
+
+            # {slug}.yml
+            paths.append(os.path.join(d, '%s.yml' % cls.slug))
+
+            # {slug}.{env}.yml
+            if env:
+                paths.append(os.path.join(d, '%s.%s.yml' % (cls.slug, env)))
 
         return cls(paths)
 
@@ -43,11 +43,12 @@ class SimpleConfig(dict):
         return super().__init__(self.schema(config))
 
 
+# TODO|dev
 class Config(SimpleConfig):
 
     slug = 'osp'
 
-    config_dirs = [os.path.dirname(__file__), '/etc/osp']
+    config_dirs = [os.path.dirname(__file__), '~/.osp', '/etc/osp']
 
     schema = Schema({
 
