@@ -2,6 +2,7 @@
 
 import os
 import anyconfig
+import yaml
 
 from voluptuous import Schema, Required
 
@@ -10,11 +11,19 @@ class SimpleConfig(dict):
 
     slug = 'config'
 
-    config_dirs = []
+    config_dirs = ['/etc']
+
+    lock_dir = '/tmp'
 
     schema = Schema({})
 
-    _instance = None
+    @classmethod
+    def _lock_path(cls):
+        """Form the lock file path.
+
+        Returns: str
+        """
+        return os.path.join(cls.lock_dir, '%s.lock.yml' % cls.slug)
 
     @classmethod
     def read(cls):
@@ -34,24 +43,9 @@ class SimpleConfig(dict):
             if env:
                 paths.append(os.path.join(d, '%s.%s.yml' % (cls.slug, env)))
 
+        paths.append(cls._lock_path())
+
         return cls(paths)
-
-    @classmethod
-    def get(cls):
-        """Provide a cached instance.
-
-        Returns: cls
-        """
-        if not cls._instance:
-            cls._instance = cls.from_env()
-
-        return cls._instance
-
-    @classmethod
-    def reset(cls):
-        """Clear the cached instance.
-        """
-        del cls._instance
 
     def __init__(self, paths):
         """Read config files, validate schema, build dictionary.
@@ -62,6 +56,17 @@ class SimpleConfig(dict):
         config = anyconfig.load(paths, ignore_missing=True)
 
         return super().__init__(self.schema(config))
+
+    def lock(self):
+        """Dump current values into lock file.
+        """
+        with open(self._lock_path(), 'w') as fh:
+            fh.write(yaml.dump(dict(self)))
+
+    def unlock(self):
+        """Clear the /tmp file.
+        """
+        os.remove(self._lock_path())
 
 
 # TODO|dev
