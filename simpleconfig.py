@@ -26,15 +26,7 @@ class SimpleConfig(dict):
         return '%s_%s' % (cls.slug.upper(), suffix)
 
     @classmethod
-    def _env(cls):
-        """Try to read an "environment" from ENV variable.
-
-        Returns: str
-        """
-        return os.environ.get(cls._env_var('ENV'))
-
-    @classmethod
-    def _path(cls, config_dir):
+    def _yml_path(cls, config_dir):
         """Given a config dir, form a file path:
         {slug}.yml
 
@@ -43,7 +35,7 @@ class SimpleConfig(dict):
         return os.path.join(config_dir, '%s.yml' % cls.slug)
 
     @classmethod
-    def _env_path(cls, config_dir, env):
+    def _env_yml_path(cls, config_dir, env):
         """Given a config dir + env, form a file path:
         {slug}.{env}.yml
 
@@ -52,7 +44,7 @@ class SimpleConfig(dict):
         return os.path.join(config_dir, '%s.%s.yml' % (cls.slug, env))
 
     @classmethod
-    def _lock_path(cls):
+    def _lock_yml_path(cls):
         """Form the lock file path.
 
         Returns: str
@@ -65,19 +57,19 @@ class SimpleConfig(dict):
 
         Returns: list of str
         """
-        env = cls._env()
+        env = os.environ.get(cls._env_var('ENV'))
 
         paths = []
         for d in cls.config_dirs:
 
             # {slug}.yml
-            paths.append(cls._path(d))
+            paths.append(cls._yml_path(d))
 
             # {slug}.{env}.yml
             if env:
-                paths.append(cls._env_path(d, env))
+                paths.append(cls._env_yml_path(d, env))
 
-        paths.append(cls._lock_path())
+        paths.append(cls._lock_yml_path())
 
         return paths
 
