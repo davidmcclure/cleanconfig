@@ -17,7 +17,7 @@ class SimpleConfig(dict):
     _instance = None
 
     @classmethod
-    def from_env(cls):
+    def read(cls):
         """Get a config instance with the default files.
 
         Returns: cls
