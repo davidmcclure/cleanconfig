@@ -10,7 +10,7 @@ setup(
     description='Simple configuration for Python projects.',
     author='David McClure',
     author_email='dclure@mit.edu',
-    url='https://github.com/opensyllabus/osp-pipeline',
+    url='https://github.com/davidmcclure/simpleconfig',
     packages=find_packages(),
     license='MIT',
     install_requires=[
