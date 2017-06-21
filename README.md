@@ -7,7 +7,7 @@ Though this can be used in any project, it was originally abstracted out of a se
 
 ## Basic Usage
 
-Inherit from SimpleConfig and provide:
+Inherit from `SimpleConfig` and provide:
 
 - `slug` - A string used to automatically build file paths and ENV variables.
 - `config_dirs` - A list of directories where SimpleConfig will looks for config files, from lowest to highest priority.
