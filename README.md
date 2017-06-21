@@ -1,9 +1,9 @@
 
 # SimpleConfig
 
-A confiuration base class for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is really the conventions that it enforces, not the code itself (which is minimal, just about 70 lines).
+SimpleConfig is confiuration base class for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is really just the conventions that it enforces, not the code itself - which is minimal, just about 70 lines.
 
-Though this can be used in any project, it was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on big data sets. There aren't really "frameworks" for these types of projects that enforce specific configuration conventions, I found myself writing slightly different versions of the same bespoke `Config` class over and over again. SimpleConfig merges all of these together.
+Though this can be used in any project, it was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark. Since there aren't really "frameworks" for these types of projects that enforce specific configuration conventions, I found myself writing slightly different versions of the same bespoke `Config` class over and over again. SimpleConfig merges all of these together.
 
 ## Basic Usage
 
