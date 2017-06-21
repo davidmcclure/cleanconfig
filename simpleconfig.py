@@ -18,6 +18,40 @@ class SimpleConfig(dict):
     schema = Schema({})
 
     @classmethod
+    def _env_var(cls, suffix):
+        """Form an ENV variable from the slug.
+
+        Returns: str
+        """
+        return '%s_%s' % (cls.slug.upper(), suffix)
+
+    @classmethod
+    def _env(cls):
+        """Try to read an "environment" from ENV variable.
+
+        Returns: str
+        """
+        return os.environ.get(cls._env_var('ENV'))
+
+    @classmethod
+    def _path(cls, config_dir):
+        """Given a config dir, form a file path:
+        {slug}.yml
+
+        Returns: str
+        """
+        return os.path.join(config_dir, '%s.yml' % cls.slug)
+
+    @classmethod
+    def _env_path(cls, config_dir, env):
+        """Given a config dir + env, form a file path:
+        {slug}.{env}.yml
+
+        Returns: str
+        """
+        return os.path.join(config_dir, '%s.%s.yml' % (cls.slug, env))
+
+    @classmethod
     def _lock_path(cls):
         """Form the lock file path.
 
@@ -26,26 +60,34 @@ class SimpleConfig(dict):
         return os.path.join(cls.lock_dir, '%s.lock.yml' % cls.slug)
 
     @classmethod
-    def read(cls):
-        """Get a config instance with the default files.
+    def paths(cls):
+        """Build the complete path list.
 
-        Returns: cls
+        Returns: list of str
         """
-        env = os.environ.get('%s_%s' % (cls.slug.upper(), 'ENV'))
+        env = cls._env()
 
         paths = []
         for d in cls.config_dirs:
 
             # {slug}.yml
-            paths.append(os.path.join(d, '%s.yml' % cls.slug))
+            paths.append(cls._path(d))
 
             # {slug}.{env}.yml
             if env:
-                paths.append(os.path.join(d, '%s.%s.yml' % (cls.slug, env)))
+                paths.append(cls._env_path(d, env))
 
         paths.append(cls._lock_path())
 
-        return cls(paths)
+        return paths
+
+    @classmethod
+    def read(cls):
+        """Get a config instance with the default files.
+
+        Returns: cls
+        """
+        return cls(cls.paths())
 
     def __init__(self, paths):
         """Read config files, validate schema, build dictionary.
