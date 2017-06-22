@@ -10,7 +10,7 @@
 
 SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
-SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing custom `Config` classes over and over again. SimpleConfig merges together the stuff that worked from these experiments.
+SimpleConfig was originally abstracted out of a series of data wrangling projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing custom `Config` classes over and over again. SimpleConfig merges together the stuff that worked from these experiments.
 
 SimpleConfig might be a good fit it:
 
@@ -20,7 +20,7 @@ SimpleConfig might be a good fit it:
 
 - You need to be able to selectively override config values in fine-grained, complex ways. SimpleConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
 
-- You tend to deploy projects automation frameworks like Ansible, and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
+- You tend to deploy projects automation frameworks like [Ansible](https://www.ansible.com/), and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
 
 ## Basic Usage
 
@@ -127,7 +127,7 @@ Then a `myproject.test.yaml` file could clobber this key:
 database: /tmp/myproject.db
 ```
 
-And then, depending on the tooling, the test suite can often be configured to automatically set the ENV variable. For example, using `pytest` along with the [`pytest-env`](https://github.com/MobileDynasty/pytest-env) package, you could create a `pytest.ini` with:
+And then, depending on the tooling, the test suite can often be configured to automatically set the ENV variable. For example, using [pytest](https://docs.pytest.org/en/latest/) along with the [pytest-env](https://github.com/MobileDynasty/pytest-env) package, you could create a `pytest.ini` with:
 
 ```ini
 [pytest]
@@ -215,7 +215,7 @@ config.redis_conn.get('foo')
 
 ## Extra config directories
 
-Sometimes, you need to specify an extra directory for configuration files, but it doesn't make sense to hardcode it into the class definition. For example, if you're deploying a project with something like Ansible of Chef, it might make more sense for the location of the config directory to be controlled by the automation framework, not the Python source code.
+Sometimes, you need to specify an extra directory for configuration files, but it doesn't make sense to hardcode it into the class definition. For example, if you're deploying a project with something like Ansible, it might make more sense for the location of the config directory to be controlled by the automation framework, not the Python source code.
 
 To make this easy, SimpleConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRS` environment variable. For example, if `config_dirs` looks like this:
 
@@ -227,7 +227,11 @@ class Config(SimpleConfig):
     config_dirs = ['~/.myproject']
 ```
 
-And `MYPROJECT_CONFIG_DIRS=/etc/myproject,/share/user/config/myproject`, then SimpleConfig append these directories to the list provided by the class. So, the final directory hierarchy would be:
+And `MYPROJECT_CONFIG_DIRS` is set:
+
+`MYPROJECT_CONFIG_DIRS=/etc/myproject,/share/user/config/myproject`
+
+Then SimpleConfig will append these directories to the list provided by the class. So, the final directory hierarchy would be:
 
 - ~/.myproject
 - /etc/myproject
@@ -248,7 +252,7 @@ call(['mpirun', 'bin/program.py'])
 # assert something that changes based on the value of `key`
 ```
 
-This obviously won't work, though, because, since `call` spawns off a fresh Python interpreter, `config['key']` will be `1` inside of `bin/program.py`, not `5`. To get around this, SimpleConfig makes it possible to temporarily "lock" the current state of a configuration object to the filesystem:
+This won't work, though, because, since `call` spawns off a fresh Python interpreter, `config['key']` will be `1` inside of `bin/program.py`, not `5`. To get around this, SimpleConfig makes it possible to temporarily "lock" the current state of a configuration object to the filesystem:
 
 ```python
 config['key'] = 5
@@ -260,9 +264,9 @@ config.unlock()
 
 When `.lock()` is called, SimpleConfig dumps the current config dictionary as a YAML file to `/tmp/{slug}.yml` (the root directory for the lock file can be overridden with the `lock_dir` class property). And, whenever SimpleConfig reads config files, it automatically appends this directory as the last, highest-priority directory, so the locked values are always guaranteed to make it through to the final config object.
 
-This could also be accomplished by turning the executable into a fully-fledged CLI program that takes arguments / flags, maybe with something like click. But, if you don't ever intend to actually use it as a CLI program, it can feel sort of janky to just bolt on the argument parsing for the purpose of the tests suite - this can be a cleaner way.
+This could also be accomplished by turning the executable into a fully-fledged CLI program that takes arguments / flags, maybe with something like [click](http://click.pocoo.org/). But, if you don't ever intend to actually use it as a CLI program, it can feel sort of janky to bolt on the argument parsing just for the purpose of the tests suite - this can be a cleaner way.
 
-Be careful with this, though, since it can become sort of a footgun if not used properly. Eg, if you forget to call `.unlock()`, you'll end up with a marooned lock file in `/tmp`, which could produce confusing errors.
+Be careful with this, though, since it can become sort of a footgun if not used properly. Eg, if you forget to call `.unlock()`, you'll end up with a marooned lock file in `/tmp`, which could produce confusing behavior.
 
 ## Patterns
 
