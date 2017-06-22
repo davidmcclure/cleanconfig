@@ -213,6 +213,24 @@ config.redis_conn.get('foo')
 
 ## Extra config directories
 
+Sometimes, you need to specify a new directory for configuration files, but it doesn't make sense to hardcode it directly into the class definition. For example, if you're deploying a project with something like Ansible of Chef, it might make more sense for the location of the config directory to be "owned" by the automation framework, not the Python source code.
+
+To make this easy, SimpleConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRs` environment variable, which can be set at deploy-time. For example, if `config_dirs` looks like this:
+
+```python
+class Config(SimpleConfig):
+
+    name = 'myproject'
+
+    config_dirs = ['~/.myproject']
+```
+
+And `MYPROJECT_CONFIG_DIRS=/etc/myproject,/share/user/config/myproject`, then SimpleConfig append these directories to the list provided by the class. So, the final directory hierarchy would be:
+
+- ~/.myproject
+- /etc/myproject
+- /share/user/config/myproject
+
 ## Lock files
 
 ## FAQ
