@@ -279,7 +279,7 @@ Be careful with this, though, since it can become sort of a footgun if not used 
   └── myproject.yml
   ```
 
-  Where `config.py` contains the config class definition and `myproject.yml` is the generic, default config file that ships with the project. Then, the config object can live in `__init__.py`:
+  Where `config.py` contains the config class definition and `myproject.yml` is a generic config file that ships with the project. Then, the config object can live in `__init__.py`:
 
   ```python
   from myproject.config import Config
