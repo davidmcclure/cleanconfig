@@ -159,14 +159,14 @@ class Config(SimpleConfig):
 
     schema = Schema({
         'redis': {
-          Required('host'): str,
-          Required('port'): int,
-          Required('db'): int,
+            Required('host'): str,
+            Required('port'): int,
+            Required('db'): int,
         }
     })
 ```
 
-Where to put the code that actually spins up the Redis connection object? One approach is to just encapsulate this inside of the config class itself:
+But where to put the code that actually spins up the Redis connection object? One approach is to just encapsulate this inside of the config class itself:
 
 ```python
 from redis import StrictRedis
@@ -188,7 +188,7 @@ redis_conn = config.redis_conn()
 redis_conn.get('foo')
 ```
 
-Even better - in many cases, it makes sense for these connection instances to be application globals, essentially. One nice pattern is to use the `cached_property` library to store a shared instance on the config class:
+Even better - in many cases, it makes sense for these connection instances to be application globals, essentially. One nice pattern is to use the [`cached_property`](https://github.com/pydanny/cached-property) library to store a shared instance on the config class:
 
 ```python
 from redis import StrictRedis
@@ -204,7 +204,7 @@ class Config(SimpleConfig):
         return StrictRedis(**self['redis'])
 ```
 
-This avoids unnecessarily spinning up multiple connections, and also means that the instance can just be looked-up directly as a property on the class:
+This avoids unnecessarily spinning up multiple connections, and also means that the instance can be looked up directly as a property on the class:
 
 ```python
 config = Config.read()
