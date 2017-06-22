@@ -18,7 +18,7 @@ SimpleConfig might be a good fit it:
 
 - You want to be able to easily add "business logic" to config values. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
 
-- You need to be able to selectively override config values in a fine-grained, complex ways. SimpleConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
+- You need to be able to selectively override config values in fine-grained, complex ways. SimpleConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
 
 ## Basic Usage
 
@@ -56,9 +56,9 @@ class Config(SimpleConfig):
     })
 ```
 
-In this case, since `config_files` starts with `os.path.dirname(__file__)`, SimpleConfig will first look for a file called `myproject.yml` in the same directory as the Python file that contains the class, then in `~/.myproject`, and then in `/etc/myproject`.
+In this case, per `config_files`, SimpleConfig will first look for a file called `myproject.yml` in the same directory as the Python file that contains the class, then in `~/.myproject`, and then in `/etc/myproject`.
 
-Per the schema, the config files would look like:
+To match the schema, the config files would look like:
 
 ```yaml
 key1: val1
@@ -88,7 +88,7 @@ config['outer']['inner']
 
 ## Environments
 
-Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase slug}_ENV`. For example, in this case, since `slug` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{slug}.{env}.yml` will be loaded immediately after the "default" file in the directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will try to load:
+Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase slug}_ENV`. For example, in this case, since `slug` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{slug}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will try to load:
 
 - `[Directory of Python file]/myproject.yml`
 - `[Directory of Python file]/myproject.test.yml`
