@@ -10,7 +10,7 @@
 
 SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
-SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have weird, tricky requirements vis-a-vis configuration - I found myself writing slightly different versions of the same bespoke `Config` class over and over again. SimpleConfig merges all of these together.
+SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have weird, tricky requirements vis-a-vis configuration - I found myself writing bespoke `Config` classes over and over again. SimpleConfig merges the best ideas from all of these.
 
 SimpleConfig might be a good fit it:
 
@@ -141,3 +141,8 @@ And then, whenver code runs under `pytest`, SimpleConfig will automatically read
 ## Extra config directories
 
 ## Lock files
+
+## FAQ
+
+- Why not settings.py?
+- Where, and how often, should I read the configuration?
