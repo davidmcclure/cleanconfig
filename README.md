@@ -266,7 +266,7 @@ Be careful with this, though, since it can become sort of a footgun if not used 
 
 ## Patterns
 
-- **Where, and how often, should I read the configuration?** There's no right answer to this, but, as a rule of thumb, it usually works fine to just use a global singleton. For example, if you've got a module called `myproject`, the directory layout might look like:
+- **Where, and how often, should I read the configuration?** As a rule of thumb, it's usually best just to use a global singleton, since it's wasteful to re-parse the config files over and over again. For example, if you've got a module called `myproject`, the directory layout might look like:
 
   ```
   myproject
@@ -275,7 +275,7 @@ Be careful with this, though, since it can become sort of a footgun if not used 
   └── myproject.yml
   ```
 
-  Where `config.py` contains the config class definition and `myproject.yml` is the generic, default config file that ships with the application. Then, the config object can live in `__init__.py`:
+  Where `config.py` contains the config class definition and `myproject.yml` is the generic, default config file that ships with the project. Then, the config object can live in `__init__.py`:
 
   ```python
   from myproject.config import Config
