@@ -217,7 +217,7 @@ config.redis_conn.get('foo')
 
 Sometimes, you need to specify an extra directory for configuration files, but it doesn't make sense to hardcode it into the class definition. For example, if you're deploying a project with something like Ansible of Chef, it might make more sense for the location of the config directory to be controlled by the automation framework, not the Python source code.
 
-To make this easy, SimpleConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRs` environment variable. For example, if `config_dirs` looks like this:
+To make this easy, SimpleConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRS` environment variable. For example, if `config_dirs` looks like this:
 
 ```python
 class Config(SimpleConfig):
