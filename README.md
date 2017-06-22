@@ -20,7 +20,7 @@ SimpleConfig might be a good fit it:
 
 - You need to be able to selectively override config values in fine-grained, complex ways. SimpleConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
 
-- You tend to deploy projects automation frameworks like [Ansible](https://www.ansible.com/), and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
+- You tend to deploy projects automation with frameworks like [Ansible](https://www.ansible.com/), and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
 
 ## Basic Usage
 
