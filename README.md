@@ -10,7 +10,7 @@
 
 SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
-SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have weird, tricky requirements vis-a-vis configuration - I found myself writing bespoke `Config` classes over and over again. SimpleConfig picks out the best ideas from all of these.
+SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing bespoke `Config` classes over and over again. SimpleConfig picks out the best ideas from all of these.
 
 SimpleConfig might be a good fit it:
 
@@ -213,9 +213,9 @@ config.redis_conn.get('foo')
 
 ## Extra config directories
 
-Sometimes, you need to specify a new directory for configuration files, but it doesn't make sense to hardcode it directly into the class definition. For example, if you're deploying a project with something like Ansible of Chef, it might make more sense for the location of the config directory to be "owned" by the automation framework, not the Python source code.
+Sometimes, you need to specify an extra directory for configuration files, but it doesn't make sense to hardcode it into the class definition. For example, if you're deploying a project with something like Ansible of Chef, it might make more sense for the location of the config directory to be controlled by the automation framework, not the Python source code.
 
-To make this easy, SimpleConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRs` environment variable, which can be set at deploy-time. For example, if `config_dirs` looks like this:
+To make this easy, SimpleConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRs` environment variable. For example, if `config_dirs` looks like this:
 
 ```python
 class Config(SimpleConfig):
