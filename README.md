@@ -10,15 +10,17 @@
 
 SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
-SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing bespoke `Config` classes over and over again. SimpleConfig picks out the best ideas from all of these.
+SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing custom `Config` classes over and over again. SimpleConfig merges together the stuff that worked from these experiments.
 
 SimpleConfig might be a good fit it:
 
 - You're working outside the context of a framework like Django that have built-in configuration conventions, and don't want to reinvent the wheel. If you're in Django - just use `settings.py`.
 
-- You want to be able to easily add "business logic" to config values. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
+- You want to be able to easily add "business logic" to config values, in the way that you might add custom methods to a database model class. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
 
 - You need to be able to selectively override config values in fine-grained, complex ways. SimpleConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
+
+- You tend to deploy projects automation frameworks like Ansible, and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
 
 ## Basic Usage
 
@@ -233,7 +235,58 @@ And `MYPROJECT_CONFIG_DIRS=/etc/myproject,/share/user/config/myproject`, then Si
 
 ## Lock files
 
-## FAQ
+Ok, this is a bit more obscure, but indulge me - now and then there are situations where you want to change a config value and "communicate" the change to another process, usually in the context of testing.
 
-- Why not settings.py?
-- Where, and how often, should I read the configuration?
+It's often enough just to use a `test` environment, but sometimes it's necessary to swap config values on a per-test basis. For example, imagine you're testing an MPI executable that, internally, uses config values. By default, say the value of `config['key']` is `1`, and you want to do something like this:
+
+```python
+from subprocess import call
+
+config['key'] = 5
+call(['mpirun', 'bin/program.py'])
+
+# assert something that changes based on the value of `key`
+```
+
+This obviously won't work, though, because, since `call` spawns off a fresh Python interpreter, `config['key']` will be `1` inside of `bin/program.py`, not `5`. To get around this, SimpleConfig makes it possible to temporarily "lock" the current state of a configuration object to the filesystem:
+
+```python
+config['key'] = 5
+
+config.lock()
+call(['mpirun', 'bin/program.py'])
+config.unlock()
+```
+
+When `.lock()` is called, SimpleConfig dumps the current config dictionary as a YAML file to `/tmp/{slug}.yml` (the root directory for the lock file can be overridden with the `lock_dir` class property). And, whenever SimpleConfig reads config files, it automatically appends this directory as the last, highest-priority directory, so the locked values are always guaranteed to make it through to the final config object.
+
+This could also be accomplished by turning the executable into a fully-fledged CLI program that takes arguments / flags, maybe with something like click. But, if you don't ever intend to actually use it as a CLI program, it can feel sort of janky to just bolt on the argument parsing for the purpose of the tests suite - this can be a cleaner way.
+
+Be careful with this, though, since it can become sort of a footgun if not used properly. Eg, if you forget to call `.unlock()`, you'll end up with a marooned lock file in `/tmp`, which could produce confusing errors.
+
+## Patterns
+
+- **Where, and how often, should I read the configuration?** There's no right answer to this, but, as a rule of thumb, it usually works fine to just use a global singleton. For example, if you've got a module called `myproject`, the directory layout might look like:
+
+  ```
+  myproject
+  ├── __init__.py
+  ├── config.py
+  └── myproject.yml
+  ```
+
+  Where `config.py` contains the config class definition and `myproject.yml` is the generic, default config file that ships with the application. Then, the config object can live in `__init__.py`:
+
+  ```python
+  from myproject.config import Config
+
+  config = Config.read()
+  ```
+
+  And then, elsewhere in the project, you can do:
+
+  ```python
+  from myproject import config
+
+  # Use config..
+  ```
