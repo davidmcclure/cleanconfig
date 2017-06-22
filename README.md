@@ -46,7 +46,7 @@ class Config(SimpleConfig):
     })
 ```
 
-In this case, since `config_files` starts with `os.path.dirname(__file__)`, SimpleConfig will first look for a file called `myproject.yml` in the same directory as the Python file that contains the class; then `~/.myproject`, and then `/etc/myproject`.
+In this case, since `config_files` starts with `os.path.dirname(__file__)`, SimpleConfig will first look for a file called `myproject.yml` in the same directory as the Python file that contains the class, then in `~/.myproject`, and then in `/etc/myproject`.
 
 Per the schema, the config files would look like:
 
@@ -58,7 +58,7 @@ outer:
   inner: val3
 ```
 
-(Or, at least, keys/values in all the files have to collectively merge together into that structure.)
+(Or, at least, keys + values in all the files have to collectively merge together into that structure. Theoretically you could have `key1` in one file, `key2` in another, etc., if you so wish.)
 
 Then, use the `.read()` classmethod to parse the files and build the merged dictionary:
 
@@ -78,10 +78,10 @@ config['outer']['inner']
 
 ## Environments
 
-Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable of the form `{uppercase slug}_ENV`. For example, in this case, since `slug` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{slug}.{env}.yml` will be loaded immediately after the "default" file in the directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will try to load:
+Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase slug}_ENV`. For example, in this case, since `slug` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{slug}.{env}.yml` will be loaded immediately after the "default" file in the directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will try to load:
 
-- `[Python file path]/myproject.yml`
-- `[Python file path]/myproject.test.yml`
+- `[Directory of Python file]/myproject.yml`
+- `[Directory of Python file]/myproject.test.yml`
 - `~/.myproject/myproject.yml`
 - `~/.myproject/myproject.test.yml`
 - `/etc/myproject/myproject.yml`
@@ -101,7 +101,7 @@ config['outer']['inner']
 >> override
 ```
 
-This makes it easy to automatically patch in global configuration changes inside of, for example, testing suites. For instance, say the default `myproject.yml` config looks like:
+This makes it easy to automatically patch in global configuration changes in certain contexts - for example, when tests are running. For instance, say the default `myproject.yml` config looks like:
 
 ```yaml
 database: /var/myproject.db
@@ -113,7 +113,7 @@ Then a `myproject.test.yaml` file could clobber this key:
 database: /tmp/myproject.db
 ```
 
-And then, depending on the tooling, the test suite can often be configured to automatically set the ENV variable. For example, using `pytest` along with the `pytest-env` package, you could create a `pytest.ini` with:
+And then, depending on the tooling, the test suite can often be configured to automatically set the ENV variable. For example, using `pytest` along with the [`pytest-env`](https://github.com/MobileDynasty/pytest-env) package, you could create a `pytest.ini` with:
 
 ```ini
 [pytest]
