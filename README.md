@@ -8,35 +8,37 @@
 ╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
 ```
 
-SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
+PowerConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of PowerConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
-SimpleConfig was originally abstracted out of a series of data wrangling projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing custom `Config` classes over and over again. SimpleConfig merges together the stuff that worked from these experiments.
+PowerConfig was originally abstracted out of a series of data wrangling projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing custom `Config` classes over and over again. PowerConfig merges together the stuff that worked from these experiments.
 
-SimpleConfig might be a good fit it:
+PowerConfig might be a good fit it:
+
+- You want to explicitly define and validate the format of the config object.
 
 - You're working outside the context of a framework like Django that have built-in configuration conventions, and don't want to reinvent the wheel. If you're in Django - just use `settings.py`.
 
-- You want to be able to easily add "business logic" to config values, in the way that you might add custom methods to a database model class. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
+- You want to be able to easily add "business logic" to config values, in the way that you might add methods to a database model. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
 
-- You need to be able to selectively override config values in fine-grained, complex ways. SimpleConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
+- You need to be able to override config values in fine-grained, complex ways. PowerConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
 
-- You tend to deploy projects automation with frameworks like [Ansible](https://www.ansible.com/), and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
+- You deploy projects automation with frameworks like [Ansible](https://www.ansible.com/) and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
 
 ## Basic Usage
 
-Inherit from `SimpleConfig` and provide:
+Inherit from `PowerConfig` and provide:
 
-- `name` - A string used to automatically build file paths and ENV variables. For example, if this is `myproject`, then SimpleConfig will assume that all config files for this class will be called `myproject.yml`.
+- `name` - A string used to automatically build file paths and ENV variables. For example, if this is `myproject`, then PowerConfig will assume that all config files for this class will be called `myproject.yml`.
 
-- `config_dirs` - A list of directories where SimpleConfig will looks for config files, from lowest to highest priority.
+- `config_dirs` - A list of directories where PowerConfig will looks for config files, from lowest to highest priority.
 
 - `schema` - A [Voluptuous](https://github.com/alecthomas/voluptuous) schema that specifies the structure of the final dictionary that should get parsed out of the config files. This serves as a canonical reference for what config values the project can use, and ensures that errors in config files get surfaced in an explicit way.
 
 ```python
-from simpleconfig import SimpleConfig
+from powerconfig import PowerConfig
 from voluptuous import Schema, Required
 
-class Config(SimpleConfig):
+class Config(PowerConfig):
 
     name = 'myproject'
 
@@ -58,7 +60,7 @@ class Config(SimpleConfig):
     })
 ```
 
-In this case, per `config_files`, SimpleConfig will first look for a file called `myproject.yml` in the same directory as the Python file that contains the class, then in `~/.myproject`, and then in `/etc/myproject`.
+In this case, per `config_files`, PowerConfig will first look for a file called `myproject.yml` in the same directory as the Python file that contains the class, then in `~/.myproject`, and then in `/etc/myproject`.
 
 To match the schema, the config file would look like:
 
@@ -78,7 +80,7 @@ Then, use the `.read()` classmethod to parse the files and build the merged dict
 config = Config.read()
 ```
 
-`SimpleConfig` inherits from `dict`, so values can be looked up just like on regular dictionaries:
+`PowerConfig` inherits from `dict`, so values can be looked up just like on regular dictionaries:
 
 ```python
 config['key1']
@@ -90,7 +92,7 @@ config['outer']['inner']
 
 ## Environments
 
-Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase name}_ENV`. For example, in this case, since `name` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{name}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will load:
+Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When PowerConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase name}_ENV`. For example, in this case, since `name` is `myproject`, PowerConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{name}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then PowerConfig will load:
 
 - `[Directory of Python file]/myproject.yml`
 - `[Directory of Python file]/myproject.test.yml`
@@ -99,7 +101,7 @@ Often, you need to change config values based on an "environment" - `test`, `dev
 - `/etc/myproject/myproject.yml`
 - `/etc/myproject/myproject.test.yml`
 
-(If a file is missing, SimpleConfig just ignores it and moves on.)
+(If a file is missing, PowerConfig just ignores it and moves on.)
 
 So, if `/etc/myproject/myproject.test.yml` contains:
 
@@ -136,7 +138,7 @@ env =
   MYPROJECT_ENV=test
 ```
 
-And then, whenver code runs under `pytest`, SimpleConfig will automatically read from the `.test.yml` files.
+And then, whenver code runs under `pytest`, PowerConfig will automatically read from the `.test.yml` files.
 
 ## Business logic
 
@@ -152,10 +154,10 @@ redis:
 And a config class like:
 
 ```python
-from simpleconfig import SimpleConfig
+from powerconfig import PowerConfig
 from voluptuous import Schema, Required
 
-class Config(SimpleConfig):
+class Config(PowerConfig):
 
     ...
 
@@ -173,7 +175,7 @@ But where to put the code that actually spins up the Redis connection object? On
 ```python
 from redis import StrictRedis
 
-class Config(SimpleConfig):
+class Config(PowerConfig):
 
     ...
 
@@ -196,7 +198,7 @@ Even better - in many cases, it makes sense for these connection instances to be
 from redis import StrictRedis
 from cached_property import cached_property
 
-class Config(SimpleConfig):
+class Config(PowerConfig):
 
     ...
 
@@ -217,10 +219,10 @@ config.redis_conn.get('foo')
 
 Sometimes, you need to specify an extra directory for configuration files, but it doesn't make sense to hardcode it into the class definition. For example, if you're deploying a project with something like Ansible, it might make more sense for the location of the config directory to be controlled by the automation framework, not the Python source code.
 
-To make this easy, SimpleConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRS` environment variable. For example, if `config_dirs` looks like this:
+To make this easy, PowerConfig will automatically read a comma-delimited list of additional config directories from a `{SLUG}_CONFIG_DIRS` environment variable. For example, if `config_dirs` looks like this:
 
 ```python
-class Config(SimpleConfig):
+class Config(PowerConfig):
 
     name = 'myproject'
 
@@ -231,7 +233,7 @@ And `MYPROJECT_CONFIG_DIRS` is set:
 
 `MYPROJECT_CONFIG_DIRS=/etc/myproject,/share/user/config/myproject`
 
-Then SimpleConfig will append these directories to the list provided by the class. So, the final directory hierarchy would be:
+Then PowerConfig will append these directories to the list provided by the class. So, the final directory hierarchy would be:
 
 - ~/.myproject
 - /etc/myproject
@@ -252,7 +254,7 @@ call(['mpirun', 'bin/program.py'])
 # assert something that changes based on the value of `key`
 ```
 
-This won't work, though, because, since `call` spawns off a fresh Python interpreter, `config['key']` will be `1` inside of `bin/program.py`, not `5`. To get around this, SimpleConfig makes it possible to temporarily "lock" the current state of a configuration object to the filesystem:
+This won't work, though, because, since `call` spawns off a fresh Python interpreter, `config['key']` will be `1` inside of `bin/program.py`, not `5`. To get around this, PowerConfig makes it possible to temporarily "lock" the current state of a configuration object to the filesystem:
 
 ```python
 config['key'] = 5
@@ -262,7 +264,7 @@ call(['mpirun', 'bin/program.py'])
 config.unlock()
 ```
 
-When `.lock()` is called, SimpleConfig dumps the current config dictionary as a YAML file to `/tmp/{slug}.yml` (the root directory for the lock file can be overridden with the `lock_dir` class property). And, whenever SimpleConfig reads config files, it automatically appends this directory as the last, highest-priority directory, so the locked values are always guaranteed to make it through to the final config object.
+When `.lock()` is called, PowerConfig dumps the current config dictionary as a YAML file to `/tmp/{slug}.yml` (the root directory for the lock file can be overridden with the `lock_dir` class property). And, whenever PowerConfig reads config files, it automatically appends this directory as the last, highest-priority directory, so the locked values are always guaranteed to make it through to the final config object.
 
 This could also be accomplished by turning the executable into a fully-fledged CLI program that takes arguments / flags, maybe with something like [click](http://click.pocoo.org/). But, if you don't ever intend to actually use it as a CLI program, it can feel sort of janky to bolt on the argument parsing just for the purpose of the tests suite - this can be a cleaner way.
 

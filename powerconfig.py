@@ -7,7 +7,7 @@ import yaml
 from voluptuous import Schema, Required
 
 
-class SimpleConfig(dict):
+class PowerConfig(dict):
 
     name = 'config'
 
@@ -114,7 +114,7 @@ class SimpleConfig(dict):
 
 
 # TODO|dev
-class Config1(SimpleConfig):
+class Config1(PowerConfig):
 
     name = 'c1'
 
@@ -126,7 +126,7 @@ class Config1(SimpleConfig):
 
 
 # TODO|dev
-class Config2(SimpleConfig):
+class Config2(PowerConfig):
 
     name = 'c2'
 
