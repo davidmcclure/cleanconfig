@@ -68,7 +68,7 @@ outer:
   inner: val3
 ```
 
-(Or, at least, keys + values in all the files have to collectively merge together into that structure. Theoretically you could have `key1` in one file, `key2` in another, etc., if you so wish.)
+(Or, at least, keys + values in all the files have to collectively merge together into that structure. Theoretically you could have `key1` in one file and `key2` in another, if you so wish.)
 
 Then, use the `.read()` classmethod to parse the files and build the merged dictionary:
 
@@ -88,7 +88,7 @@ config['outer']['inner']
 
 ## Environments
 
-Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase slug}_ENV`. For example, in this case, since `slug` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{slug}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will try to load:
+Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase slug}_ENV`. For example, in this case, since `slug` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{slug}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will load:
 
 - `[Directory of Python file]/myproject.yml`
 - `[Directory of Python file]/myproject.test.yml`
@@ -96,6 +96,8 @@ Often, you need to change config values based on an "environment" - `test`, `dev
 - `~/.myproject/myproject.test.yml`
 - `/etc/myproject/myproject.yml`
 - `/etc/myproject/myproject.test.yml`
+
+(If a file is missing, SimpleConfig just ignores it and moves on.)
 
 So, if `/etc/myproject/myproject.test.yml` contains:
 
