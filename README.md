@@ -8,14 +8,17 @@
 ╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
 ```
 
-SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is minimal.
+SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
 SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have weird, tricky requirements vis-a-vis configuration - I found myself writing slightly different versions of the same bespoke `Config` class over and over again. SimpleConfig merges all of these together.
 
-Under the hood, SimpleConfig uses the excellent [anyconfig](https://github.com/ssato/python-anyconfig) package to do the core work of reading and merging config files.
+SimpleConfig might be a good fit it:
 
+- You're working outside the context of a framework like Django that have built-in configuration conventions, and don't want to reinvent the wheel. If you're in Django - just use `settings.py`.
 
-And since these projects can sometimes have sort of weird, tricky requirements vis-a-vis configuration
+- You want to be able to easily add "business logic" to config values. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
+
+- You need to be able to selectively override config values in a fine-grained, complex ways. SimpleConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
 
 ## Basic Usage
 
@@ -131,6 +134,8 @@ env =
 
 And then, whenver code runs under `pytest`, SimpleConfig will automatically read from the `.test.yml` files.
 
-## Lock files
+## Business logic
 
 ## Extra config directories
+
+## Lock files
