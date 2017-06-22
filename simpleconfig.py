@@ -1,19 +1,4 @@
 
-"""
-███████╗██╗███╗   ███╗██████╗ ██╗     ███████╗
-██╔════╝██║████╗ ████║██╔══██╗██║     ██╔════╝
-███████╗██║██╔████╔██║██████╔╝██║     █████╗
-╚════██║██║██║╚██╔╝██║██╔═══╝ ██║     ██╔══╝
-███████║██║██║ ╚═╝ ██║██║     ███████╗███████╗
-╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝
-
- ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
-██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
-██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
-██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
-╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
- ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
-"""
 
 import os
 import anyconfig
@@ -24,7 +9,7 @@ from voluptuous import Schema, Required
 
 class SimpleConfig(dict):
 
-    slug = 'config'
+    name = 'config'
 
     config_dirs = ['/etc']
 
@@ -34,11 +19,11 @@ class SimpleConfig(dict):
 
     @classmethod
     def _env_var(cls, suffix):
-        """Form an ENV variable from the slug.
+        """Form an ENV variable from the name.
 
         Returns: str
         """
-        return '%s_%s' % (cls.slug.upper(), suffix)
+        return '%s_%s' % (cls.name.upper(), suffix)
 
     @classmethod
     def _env_config_dirs(cls):
@@ -53,20 +38,20 @@ class SimpleConfig(dict):
     @classmethod
     def _yml_path(cls, config_dir):
         """Given a config dir, form a file path:
-        {slug}.yml
+        {name}.yml
 
         Returns: str
         """
-        return os.path.join(config_dir, '%s.yml' % cls.slug)
+        return os.path.join(config_dir, '%s.yml' % cls.name)
 
     @classmethod
     def _env_yml_path(cls, config_dir, env):
         """Given a config dir + env, form a file path:
-        {slug}.{env}.yml
+        {name}.{env}.yml
 
         Returns: str
         """
-        return os.path.join(config_dir, '%s.%s.yml' % (cls.slug, env))
+        return os.path.join(config_dir, '%s.%s.yml' % (cls.name, env))
 
     @classmethod
     def _lock_yml_path(cls):
@@ -74,7 +59,7 @@ class SimpleConfig(dict):
 
         Returns: str
         """
-        return os.path.join(cls.lock_dir, '%s.lock.yml' % cls.slug)
+        return os.path.join(cls.lock_dir, '%s.lock.yml' % cls.name)
 
     @classmethod
     def paths(cls):
@@ -87,10 +72,10 @@ class SimpleConfig(dict):
         paths = []
         for d in cls.config_dirs + cls._env_config_dirs():
 
-            # {slug}.yml
+            # {name}.yml
             paths.append(cls._yml_path(d))
 
-            # {slug}.{env}.yml
+            # {name}.{env}.yml
             if env:
                 paths.append(cls._env_yml_path(d, env))
 
@@ -131,7 +116,7 @@ class SimpleConfig(dict):
 # TODO|dev
 class Config1(SimpleConfig):
 
-    slug = 'c1'
+    name = 'c1'
 
     config_dirs = [os.path.dirname(__file__), '~/.osp', '/etc/osp']
 
@@ -143,7 +128,7 @@ class Config1(SimpleConfig):
 # TODO|dev
 class Config2(SimpleConfig):
 
-    slug = 'c2'
+    name = 'c2'
 
     config_dirs = [os.path.dirname(__file__), '~/.osp', '/etc/osp']
 

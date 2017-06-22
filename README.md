@@ -10,7 +10,7 @@
 
 SimpleConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of SimpleConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
-SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have weird, tricky requirements vis-a-vis configuration - I found myself writing bespoke `Config` classes over and over again. SimpleConfig merges the best ideas from all of these.
+SimpleConfig was originally abstracted out of a series of data wrangling projects at the Stanford Literary Lab and the Open Syllabus Project, many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have weird, tricky requirements vis-a-vis configuration - I found myself writing bespoke `Config` classes over and over again. SimpleConfig picks out the best ideas from all of these.
 
 SimpleConfig might be a good fit it:
 
@@ -24,7 +24,7 @@ SimpleConfig might be a good fit it:
 
 Inherit from `SimpleConfig` and provide:
 
-- `slug` - A string used to automatically build file paths and ENV variables. For example, if this is `myproject`, then SimpleConfig will assume that all config files for this class will be called `myproject.yml`.
+- `name` - A string used to automatically build file paths and ENV variables. For example, if this is `myproject`, then SimpleConfig will assume that all config files for this class will be called `myproject.yml`.
 
 - `config_dirs` - A list of directories where SimpleConfig will looks for config files, from lowest to highest priority.
 
@@ -36,7 +36,7 @@ from voluptuous import Schema, Required
 
 class Config(SimpleConfig):
 
-    slug = 'myproject'
+    name = 'myproject'
 
     config_dirs = [
         os.path.dirname(__file__),
@@ -88,7 +88,7 @@ config['outer']['inner']
 
 ## Environments
 
-Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase slug}_ENV`. For example, in this case, since `slug` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{slug}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will load:
+Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When SimpleConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase name}_ENV`. For example, in this case, since `name` is `myproject`, SimpleConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{name}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then SimpleConfig will load:
 
 - `[Directory of Python file]/myproject.yml`
 - `[Directory of Python file]/myproject.test.yml`
@@ -137,6 +137,79 @@ env =
 And then, whenver code runs under `pytest`, SimpleConfig will automatically read from the `.test.yml` files.
 
 ## Business logic
+
+Presumably, you want to do something with the config values. This often involves piping them into Python class instances. For example, say your project uses Redis. In a config file, you might have:
+
+```yaml
+redis:
+  host: localhost
+  port: 6379
+  db: 0
+```
+
+And a config class like:
+
+```python
+from simpleconfig import SimpleConfig
+from voluptuous import Schema, Required
+
+class Config(SimpleConfig):
+
+    ...
+
+    schema = Schema({
+        'redis': {
+          Required('host'): str,
+          Required('port'): int,
+          Required('db'): int,
+        }
+    })
+```
+
+Where to put the code that actually spins up the Redis connection object? One approach is to just encapsulate this inside of the config class itself:
+
+```python
+from redis import StrictRedis
+
+class Config(SimpleConfig):
+
+    ...
+
+    def redis_conn(self):
+        """Build a Redis connection from config parameters."""
+        return StrictRedis(**self['redis'])
+```
+
+This way, the config class "owns" the whole process of getting configuration constants for Redis and providing a live connection instance to the application:
+
+```python
+config = Config.read()
+redis_conn = config.redis_conn()
+redis_conn.get('foo')
+```
+
+Even better - in many cases, it makes sense for these connection instances to be application globals, essentially. One nice pattern is to use the `cached_property` library to store a shared instance on the config class:
+
+```python
+from redis import StrictRedis
+from cached_property import cached_property
+
+class Config(SimpleConfig):
+
+    ...
+
+    @cached_property
+    def redis_conn(self):
+        """Build a Redis connection from config parameters."""
+        return StrictRedis(**self['redis'])
+```
+
+This avoids unnecessarily spinning up multiple connections, and also means that the instance can just be looked-up directly as a property on the class:
+
+```python
+config = Config.read()
+config.redis_conn.get('foo')
+```
 
 ## Extra config directories
 
