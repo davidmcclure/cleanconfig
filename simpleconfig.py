@@ -104,13 +104,13 @@ class SimpleConfig(dict):
     def lock(self):
         """Dump current values into lock file.
         """
-        with open(self._lock_path(), 'w') as fh:
+        with open(self._lock_yml_path(), 'w') as fh:
             fh.write(yaml.dump(dict(self)))
 
     def unlock(self):
         """Clear the /tmp file.
         """
-        os.remove(self._lock_path())
+        os.remove(self._lock_yml_path())
 
 
 # TODO|dev
