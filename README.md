@@ -28,7 +28,7 @@ Inherit from `SimpleConfig` and provide:
 
 - `config_dirs` - A list of directories where SimpleConfig will looks for config files, from lowest to highest priority.
 
-- `schema` - A [Voluptuous](https://github.com/alecthomas/voluptuous) schema that specifies the structure of the final dictionary that should get parsed out of the config files. This serves as a canonical reference for what config values the project can use, and ensures that errors in incomplete / out-of-date config files get raised in an explicit way.
+- `schema` - A [Voluptuous](https://github.com/alecthomas/voluptuous) schema that specifies the structure of the final dictionary that should get parsed out of the config files. This serves as a canonical reference for what config values the project can use, and ensures that errors in config files get surfaced in an explicit way.
 
 ```python
 from simpleconfig import SimpleConfig
@@ -58,7 +58,7 @@ class Config(SimpleConfig):
 
 In this case, per `config_files`, SimpleConfig will first look for a file called `myproject.yml` in the same directory as the Python file that contains the class, then in `~/.myproject`, and then in `/etc/myproject`.
 
-To match the schema, the config files would look like:
+To match the schema, the config file would look like:
 
 ```yaml
 key1: val1
@@ -68,7 +68,7 @@ outer:
   inner: val3
 ```
 
-(Or, at least, keys + values in all the files have to collectively merge together into that structure. Theoretically you could have `key1` in one file and `key2` in another, if you so wish.)
+(Or, at least, keys + values in all the files have to collectively merge together into that structure. Theoretically you could have `key1` in one file and `key2` in another, if you wanted.)
 
 Then, use the `.read()` classmethod to parse the files and build the merged dictionary:
 
