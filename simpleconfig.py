@@ -26,6 +26,16 @@ class SimpleConfig(dict):
         return '%s_%s' % (cls.slug.upper(), suffix)
 
     @classmethod
+    def _env_config_dirs(cls):
+        """Get extra config dirs from ENV.
+
+        Returns: list
+        """
+        raw = os.environ.get(cls._env_var('CONFIG_DIRS'))
+
+        return raw.strip().split(',') if raw else []
+
+    @classmethod
     def _yml_path(cls, config_dir):
         """Given a config dir, form a file path:
         {slug}.yml
@@ -60,7 +70,7 @@ class SimpleConfig(dict):
         env = os.environ.get(cls._env_var('ENV'))
 
         paths = []
-        for d in cls.config_dirs:
+        for d in cls.config_dirs + cls._env_config_dirs():
 
             # {slug}.yml
             paths.append(cls._yml_path(d))
