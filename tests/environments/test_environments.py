@@ -22,9 +22,14 @@ class Config(CleanConfig):
     })
 
 
-def test_single_dir():
+@pytest.mark.parametrize('env,val', [
+    ('', 0),
+    ('env1', 1),
+    ('env2', 2),
+])
+def test_single_dir(env, val):
 
-    os.environ['PROJECT_ENV'] = 'test'
+    os.environ['PROJECT_ENV'] = env
     config = Config.read()
 
-    assert config['key'] == 2
+    assert config['key'] == val
