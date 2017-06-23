@@ -5,7 +5,7 @@ CleanConfig is confiuration system for Python projects that tries to be simple, 
 
 CleanConfig was originally abstracted out of a series of data engineering projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird requirements - I found myself writing custom `Config` classes over and over again. CleanConfig merges together the stuff that worked from these projects.
 
-CleanConfig might be a good fit it:
+CleanConfig might be a good fit if:
 
 - You want to explicitly define and validate the format of the config object.
 
