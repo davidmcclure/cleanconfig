@@ -17,6 +17,8 @@ CleanConfig might be a good fit if:
 
 - You need to be able to define arbitrary "environments" - `test`, `dev`, `prod`, etc.
 
+Under the hood, CleanConfig is really just a wrapper around the excellent [anyconfig](https://github.com/ssato/python-anyconfig) library, wich does all the tricky work of merging together keys from different files.
+
 ## Basic Usage
 
 Inherit from `CleanConfig` and provide:
