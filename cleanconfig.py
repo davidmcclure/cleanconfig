@@ -1,10 +1,10 @@
 
 """
- _____                   _____         ___ _
-|  _  |___ _ _ _ ___ ___|     |___ ___|  _|_|___
-|   __| . | | | | -_|  _|   --| . |   |  _| | . |
-|__|  |___|_____|___|_| |_____|___|_|_|_| |_|_  |
-                                            |___|
+ _____ _             _____         ___ _
+|     | |___ ___ ___|     |___ ___|  _|_|___
+|   --| | -_| .'|   |   --| . |   |  _| | . |
+|_____|_|___|__,|_|_|_____|___|_|_|_| |_|_  |
+                                        |___|
 """
 
 import os
@@ -14,7 +14,7 @@ import yaml
 from voluptuous import Schema, Required
 
 
-class PowerConfig(dict):
+class CleanConfig(dict):
 
     name = 'config'
 
@@ -121,7 +121,7 @@ class PowerConfig(dict):
 
 
 # TODO|dev
-class Config1(PowerConfig):
+class Config1(CleanConfig):
 
     name = 'c1'
 
@@ -133,7 +133,7 @@ class Config1(PowerConfig):
 
 
 # TODO|dev
-class Config2(PowerConfig):
+class Config2(CleanConfig):
 
     name = 'c2'
 
