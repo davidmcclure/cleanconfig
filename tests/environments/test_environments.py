@@ -27,9 +27,9 @@ class Config(CleanConfig):
     ('env1', 1),
     ('env2', 2),
 ])
-def test_single_dir(env, val):
+def test_single_dir(monkeypatch, env, val):
 
-    os.environ['PROJECT_ENV'] = env
+    monkeypatch.setenv('PROJECT_ENV', env)
     config = Config.read()
 
     assert config['key'] == val
