@@ -88,11 +88,11 @@ config['outer']['inner']
 Often, you need to change config values based on an "environment" - `test`, `dev`, `prod`, etc. When CleanConfig loads files, it will automatically try to read an environment from an ENV variable named `{uppercase name}_ENV`. For example, in this case, since `name` is `myproject`, CleanConfig will look up the value of `MYPROJECT_ENV`. If this is defined, files with names like `{name}.{env}.yml` will be loaded immediately after the "default" file in each directory, so that the ENV-specific values take precedence. In this case, if `MYPROJECT_ENV=test`, then CleanConfig will load:
 
 - `[Directory of Python file]/myproject.yml`
-- `[Directory of Python file]/myproject.test.yml`
+- **`[Directory of Python file]/myproject.test.yml`**
 - `~/.myproject/myproject.yml`
-- `~/.myproject/myproject.test.yml`
+- **`~/.myproject/myproject.test.yml`**
 - `/etc/myproject/myproject.yml`
-- `/etc/myproject/myproject.test.yml`
+- **`/etc/myproject/myproject.test.yml`**
 
 (If a file is missing, CleanConfig just ignores it and moves on.)
 
