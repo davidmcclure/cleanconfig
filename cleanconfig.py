@@ -118,27 +118,3 @@ class CleanConfig(dict):
         """Clear the /tmp file.
         """
         os.remove(self._lock_yml_path())
-
-
-# TODO|dev
-class Config1(CleanConfig):
-
-    name = 'c1'
-
-    config_dirs = [os.path.dirname(__file__), '~/.osp', '/etc/osp']
-
-    schema = Schema({
-        Required('key'): str,
-    })
-
-
-# TODO|dev
-class Config2(CleanConfig):
-
-    name = 'c2'
-
-    config_dirs = [os.path.dirname(__file__), '~/.osp', '/etc/osp']
-
-    schema = Schema({
-        Required('key'): str,
-    })
