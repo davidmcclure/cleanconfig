@@ -3,19 +3,7 @@
 
 CleanConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of CleanConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
-CleanConfig was originally abstracted out of a series of data engineering projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing custom `Config` classes over and over again. CleanConfig combines the stuff that worked from these projects.
-
-CleanConfig might be a good fit it:
-
-- You want to explicitly define and validate the format of the config object.
-
-- You're working outside the context of a framework like Django that have built-in configuration conventions, and don't want to reinvent the wheel. If you're in Django - just use `settings.py`.
-
-- You want to be able to easily add "business logic" to config values, in the way that you might add methods to a database model. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
-
-- You need to be able to override config values in fine-grained, complex ways. CleanConfig has robust support for arbitrary environments (`test`, `dev`, `prod`, etc), and also makes it possible to temporarily change values and "lock" them to the file system so that they get picked up by other processes.
-
-- You deploy projects automation with frameworks like [Ansible](https://www.ansible.com/) and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
+CleanConfig was originally abstracted out of a series of data engineering projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird requirements - I found myself writing custom `Config` classes over and over again. CleanConfig merges together the stuff that worked from these projects.
 
 ## Basic Usage
 
@@ -222,7 +210,7 @@ class Config(CleanConfig):
     config_dirs = ['~/.myproject']
 ```
 
-And `MYPROJECT_CONFIG_DIRS` is set:
+And `MYPROJECT_CONFIG_DIRS` is defined:
 
 `MYPROJECT_CONFIG_DIRS=/etc/myproject,/share/user/config/myproject`
 
@@ -263,29 +251,31 @@ This could also be accomplished by turning the executable into a fully-fledged C
 
 Be careful with this, though, since it can become sort of a footgun if not used properly. Eg, if you forget to call `.unlock()`, you'll end up with a marooned lock file in `/tmp`, which could produce confusing behavior.
 
-## Patterns
+## FAQ
 
-- **Where, and how often, should I read the configuration?** As a rule of thumb, it's usually best just to use a global singleton, since it's wasteful to re-parse the config files over and over again. For example, if you've got a module called `myproject`, the directory layout might look like:
+### Where, and how often, should I read the configuration?
 
-  ```
-  myproject
-  ├── __init__.py
-  ├── config.py
-  └── myproject.yml
-  ```
+As a rule of thumb, it usually makes sense just to use a global singleton, since it's wasteful to re-parse the config files over and over again. For example, if you've got a module called `myproject`, the directory layout might look like:
 
-  Where `config.py` contains the config class definition and `myproject.yml` is a generic config file that ships with the project. Then, the config object can live in `__init__.py`:
+```
+myproject
+├── __init__.py
+├── config.py
+└── myproject.yml
+```
 
-  ```python
-  from myproject.config import Config
+Where `config.py` contains the config class definition and `myproject.yml` is a generic config file that ships with the project. Then, the config object can live in `__init__.py`:
 
-  config = Config.read()
-  ```
+```python
+from myproject.config import Config
 
-  And then, elsewhere in the project, you can do:
+config = Config.read()
+```
 
-  ```python
-  from myproject import config
+And then, elsewhere in the project, you can do:
 
-  # Use config..
-  ```
+```python
+from myproject import config
+
+# Use config..
+```
