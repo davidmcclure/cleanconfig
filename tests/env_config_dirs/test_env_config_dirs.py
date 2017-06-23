@@ -27,7 +27,7 @@ class Config(CleanConfig):
     (['dir2'], 2),
     (['dir2', 'dir3'], 3),
 ])
-def test_multiple_dirs(monkeypatch, dirs, val):
+def test_env_config_dirs(monkeypatch, dirs, val):
 
     config_dirs = map(lambda d: fixture_path(__file__, d), dirs)
 

@@ -1,11 +1,11 @@
 
 
-import pytest
 import os
+
+from subprocess import check_output
 
 from cleanconfig import CleanConfig
 from voluptuous import Schema, Required
-from voluptuous.error import MultipleInvalid
 
 from tests.utils import fixture_path
 
@@ -23,6 +23,13 @@ class Config(CleanConfig):
     })
 
 
-def test_invalid_schema():
-    with pytest.raises(MultipleInvalid):
-        Config.read()
+def test_lock_file():
+
+    config = Config.read()
+    config['key'] = 2
+
+    config.lock()
+    res = check_output([fixture_path(__file__, 'program.py')])
+    config.unlock()
+
+    assert res.decode().strip() == '2'

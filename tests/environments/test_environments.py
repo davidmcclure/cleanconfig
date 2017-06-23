@@ -27,7 +27,7 @@ class Config(CleanConfig):
     ('env1', 1),
     ('env2', 2),
 ])
-def test_single_dir(monkeypatch, env, val):
+def test_environment(monkeypatch, env, val):
 
     monkeypatch.setenv('PROJECT_ENV', env)
     config = Config.read()
