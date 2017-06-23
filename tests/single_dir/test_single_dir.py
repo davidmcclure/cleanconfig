@@ -5,12 +5,16 @@ import os
 from cleanconfig import CleanConfig
 from voluptuous import Schema, Required
 
+from tests.utils import fixture_path
+
 
 class Config(CleanConfig):
 
     name = 'project'
 
-    config_dirs = [os.path.dirname(__file__)]
+    config_dirs = [
+        fixture_path(__file__),
+    ]
 
     schema = Schema({
         Required('key1'): str,
@@ -18,7 +22,7 @@ class Config(CleanConfig):
     })
 
 
-def test_read_config():
+def test_single_dir():
 
     config = Config.read()
 
