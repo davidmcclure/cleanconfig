@@ -1,9 +1,21 @@
 
 # CleanConfig
 
-CleanConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of CleanConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
+CleanConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of CleanConfig is mostly the conventions that it enforces, not the code itself, which is minimal.
 
 CleanConfig was originally abstracted out of a series of data engineering projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird requirements - I found myself writing custom `Config` classes over and over again. CleanConfig merges together the stuff that worked from these projects.
+
+CleanConfig might be a good fit it:
+
+- You want to explicitly define and validate the format of the config object.
+
+- You're working outside the context of a framework like Django that have built-in configuration conventions, and don't want to reinvent the wheel.
+
+- You want to be able to easily add "business logic" to config objects. Eg - you might want to encapsulate the logic needed to convert some database connection parameters into an actual connection instance.
+
+- You deploy projects with tools like [Ansible](https://www.ansible.com/) and want an easy way to patch in configuration values at deploy-time, without using weird Python import tricks.
+
+- You need to be able to define arbitrary "environments" - `test`, `dev`, `prod`, etc.
 
 ## Basic Usage
 
