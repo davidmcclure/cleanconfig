@@ -261,7 +261,7 @@ config.unlock()
 
 When `.lock()` is called, CleanConfig dumps the current config dictionary as a YAML file to `/tmp/{slug}.yml` (the root directory for the lock file can be overridden with the `lock_dir` class property). And, whenever CleanConfig reads config files, it automatically appends this directory as the last, highest-priority directory, so the locked values are always guaranteed to make it through to the final config object.
 
-This could also be accomplished by turning the executable into a fully-fledged CLI program that takes arguments / flags, maybe with something like [click](http://click.pocoo.org/). But, if you don't ever intend to actually use it as a CLI program, it can feel sort of janky to bolt on the argument parsing just for the purpose of the tests suite - this can be a cleaner way.
+This could also be accomplished by turning the executable into a fully-fledged CLI program that takes arguments / flags, maybe with something like [click](http://click.pocoo.org/). But, if you don't ever intend to actually use it as a CLI program, it can feel sort of janky to bolt on the argument parsing just for the purpose of the test suite - this can be a cleaner way.
 
 Be careful with this, though, since it can become sort of a footgun if not used properly. Eg, if you forget to call `.unlock()`, you'll end up with a marooned lock file in `/tmp`, which could produce confusing behavior.
 
