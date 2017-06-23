@@ -1,13 +1,7 @@
 
-```
- _____                   _____         ___ _
-|  _  |___ _ _ _ ___ ___|     |___ ___|  _|_|___
-|   __| . | | | | -_|  _|   --| . |   |  _| | . |
-|__|  |___|_____|___|_| |_____|___|_|_|_| |_|_  |
-                                            |___|
-```
+# PowerConfig
 
-**PowerConfig** is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of PowerConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
+PowerConfig is confiuration system for Python projects that tries to be simple, flexible, and just opinionated enough. The point of PowerConfig is mostly the conventions that it enforces, not the code itself, which is tiny.
 
 PowerConfig was originally abstracted out of a series of data wrangling projects at the [Stanford Literary Lab](http://litlab.stanford.edu/) and the [Open Syllabus Project](http://explorer.opensyllabusproject.org/), many of them using MPI or Spark to run compute jobs on large clusters. Since there aren't really "frameworks" that enforce specific conventions for these types of projects - and since they can sometimes have sort of weird, tricky requirements - I found myself writing custom `Config` classes over and over again. PowerConfig merges together the stuff that worked from these experiments.
 
