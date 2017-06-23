@@ -116,7 +116,7 @@ This makes it easy to automatically patch in global configuration changes in cer
 database: /var/myproject.db
 ```
 
-Then a `myproject.test.yaml` file could clobber this key:
+Then a `myproject.test.yml` file could clobber this key:
 
 ```yaml
 database: /tmp/myproject.db
